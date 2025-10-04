@@ -1,0 +1,96 @@
+name: Pokedex-SwiftUI
+options:
+  minimumXcodeGenVersion: 2.41.0
+  bundleIdPrefix: josejavpg
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    DEVELOPMENT_TEAM: ""
+    SWIFT_VERSION: 5.0
+    IPHONEOS_DEPLOYMENT_TARGET: 17.0
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 1.0
+packages:
+  PokedexModules:
+    path: ./Packages
+schemes:
+  Pokedex-SwiftUI:
+    build:
+      targets:
+        Pokedex-SwiftUI: all
+    test:
+      targets:
+        - name: Pokedex-SwiftUITests
+        - name: Pokedex-SwiftUIUITests
+    run:
+      config: Debug
+    archive:
+      config: Release
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+targets:
+  Pokedex-SwiftUI:
+    type: application
+    platform: iOS
+    deploymentTarget: 17.0
+    info:
+      path: Pokedex-SwiftUI/Info.plist
+    sources:
+      - path: Pokedex-SwiftUI
+        excludes:
+          - Assets.xcassets
+    resources:
+      - path: Pokedex-SwiftUI/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: josejavpg.Pokedex-SwiftUI
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_PREVIEWS: YES
+    dependencies:
+      - package: PokedexModules
+        product: CoreKit
+      - package: PokedexModules
+        product: PokeAPIClient
+      - package: PokedexModules
+        product: PersistenceKit
+      - package: PokedexModules
+        product: PokemonDomain
+      - package: PokedexModules
+        product: PokemonData
+      - package: PokedexModules
+        product: HomeFeature
+      - package: PokedexModules
+        product: FavoritesFeature
+      - package: PokedexModules
+        product: PokemonDetailFeature
+      - package: PokedexModules
+        product: AboutFeature
+  Pokedex-SwiftUITests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: 17.0
+    sources:
+      - path: Pokedex-SwiftUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: josejavpg.Pokedex-SwiftUITests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: Pokedex-SwiftUI
+  Pokedex-SwiftUIUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: 17.0
+    sources:
+      - path: Pokedex-SwiftUIUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: josejavpg.Pokedex-SwiftUIUITests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: Pokedex-SwiftUI

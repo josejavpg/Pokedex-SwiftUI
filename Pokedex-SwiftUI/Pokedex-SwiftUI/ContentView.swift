@@ -1,66 +1,70 @@
-//
-//  ContentView.swift
-//  Pokedex-SwiftUI
-//
-//  Created by Jose Javier Pabon Granados on 4/10/25.
-//
-
 import SwiftUI
-import SwiftData
+import HomeFeature
+import FavoritesFeature
+import PokemonDetailFeature
+import AboutFeature
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    private let dependencies: AppDependencies
+
+    init(dependencies: AppDependencies) {
+        self.dependencies = dependencies
+    }
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        TabView {
+            HomeView(
+                viewModelFactory: {
+                    HomeViewModel(fetchGenerations: dependencies.fetchGenerations)
+                },
+                generationDetailFactory: { generation in
+                    GenerationDetailViewModel(
+                        generation: generation,
+                        fetchPokemon: dependencies.fetchPokemonForGeneration
+                    )
+                },
+                detailScreenFactory: { summary in
+                    PokemonDetailScreen(identifier: String(summary.id)) {
+                        PokemonDetailViewModel(
+                            loadDetail: dependencies.loadPokemonDetail,
+                            toggleFavorite: dependencies.toggleFavorite,
+                            checkFavoriteStatus: dependencies.checkFavoriteStatus
+                        )
                     }
                 }
-                .onDelete(perform: deleteItems)
+            )
+            .tabItem {
+                Label("Home", systemImage: "house")
             }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+
+            FavoritesView(
+                viewModelFactory: {
+                    FavoritesViewModel(loadFavorites: dependencies.loadFavorites)
+                },
+                detailScreenFactory: { detail in
+                    PokemonDetailScreen(identifier: String(detail.id)) {
+                        let viewModel = PokemonDetailViewModel(
+                            loadDetail: dependencies.loadPokemonDetail,
+                            toggleFavorite: dependencies.toggleFavorite,
+                            checkFavoriteStatus: dependencies.checkFavoriteStatus
+                        )
+                        viewModel.prefill(detail: detail)
+                        return viewModel
                     }
                 }
+            )
+            .tabItem {
+                Label("Favorites", systemImage: "heart")
             }
-        } detail: {
-            Text("Select an item")
-        }
-    }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
+            AboutView()
+                .tabItem {
+                    Label("About", systemImage: "info.circle")
+                }
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+    ContentView(dependencies: .live())
 }
