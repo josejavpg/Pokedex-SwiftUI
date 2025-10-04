@@ -7,6 +7,7 @@ struct Pokedex_SwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(dependencies: dependencies)
+                .preferredColorScheme(.light)
         }
     }
 }

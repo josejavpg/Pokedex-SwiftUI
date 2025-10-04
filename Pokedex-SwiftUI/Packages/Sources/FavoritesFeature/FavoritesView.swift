@@ -20,6 +20,8 @@ public struct FavoritesView: View {
         NavigationStack {
             content
                 .navigationTitle("Favorites")
+                .background(Color(.systemBackground))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .task {
             await viewModel.load()

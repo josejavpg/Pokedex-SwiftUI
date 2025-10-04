@@ -23,11 +23,13 @@ public struct HomeView: View {
         NavigationStack {
             content
                 .navigationTitle("Pokedex")
+                .searchable(text: $viewModel.searchText)
+                .background(Color(.systemBackground))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .task {
             await viewModel.load()
         }
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
     }
 
     @ViewBuilder
